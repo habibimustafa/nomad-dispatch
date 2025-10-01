@@ -81,7 +81,7 @@ runs:
     - name: Setup Nomad CLI
       uses: hashicorp/setup-nomad@main
       with:
-        nomad-version: ${{ inputs.nomad_version }}
+        version: ${{ inputs.nomad_version }}
 
     - name: Verify prerequisites
       shell: bash
