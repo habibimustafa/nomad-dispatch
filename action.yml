@@ -36,6 +36,14 @@ inputs:
     description: "Optional CA certificate content (PEM)"
     required: false
     default: ""
+  client_cert:
+    description: "Optional client certificate content (PEM)"
+    required: false
+    default: ""
+  client_key:
+    description: "Optional client private key content (PEM)"
+    required: false
+    default: ""
   wait:
     description: "Wait for allocation(s) to finish"
     required: false
@@ -105,6 +113,8 @@ runs:
         NAMESPACE: ${{ inputs.namespace }}
         TLS_SKIP_VERIFY: ${{ inputs.tls_skip_verify }}
         CA_PEM: ${{ inputs.ca_pem }}
+        CLIENT_CERT: ${{ inputs.client_cert }}
+        CLIENT_KEY: ${{ inputs.client_key }}
         WAIT: ${{ inputs.wait }}
         WAIT_TIMEOUT: ${{ inputs.wait_timeout }}
         PRINT_LOGS: ${{ inputs.print_logs }}

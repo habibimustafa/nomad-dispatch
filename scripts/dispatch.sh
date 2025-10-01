@@ -11,6 +11,8 @@ REGION=${REGION:-}
 NAMESPACE=${NAMESPACE:-}
 TLS_SKIP_VERIFY=${TLS_SKIP_VERIFY:-false}
 CA_PEM=${CA_PEM:-}
+CLIENT_CERT=${CLIENT_CERT:-}
+CLIENT_KEY=${CLIENT_KEY:-}
 WAIT=${WAIT:-false}
 WAIT_TIMEOUT=${WAIT_TIMEOUT:-300}
 PRINT_LOGS=${PRINT_LOGS:-false}
@@ -34,11 +36,23 @@ if ! command -v jq >/dev/null; then err "jq not found"; exit 2; fi
 
 TMPDIR="${RUNNER_TEMP:-$(mktemp -d)}"
 CACERT_FILE=""
+CLIENT_CERT_FILE=""
+CLIENT_KEY_FILE=""
 
 # Build common TLS/auth artifacts
 if [[ -n "${CA_PEM}" ]]; then
   CACERT_FILE="${TMPDIR%/}/nomad-ca.pem"
   printf "%s" "${CA_PEM}" > "${CACERT_FILE}"
+fi
+
+if [[ -n "${CLIENT_CERT}" ]]; then
+  CLIENT_CERT_FILE="${TMPDIR%/}/nomad-client.crt"
+  printf "%s" "${CLIENT_CERT}" > "${CLIENT_CERT_FILE}"
+fi
+
+if [[ -n "${CLIENT_KEY}" ]]; then
+  CLIENT_KEY_FILE="${TMPDIR%/}/nomad-client.key"
+  printf "%s" "${CLIENT_KEY}" > "${CLIENT_KEY_FILE}"
 fi
 
 # Prepare meta as key=value array for CLI and JSON for HTTP
@@ -63,6 +77,8 @@ dispatch_with_cli() {
   [[ -n "${REGION}" ]] && NOMAD_ARGS+=("-region=${REGION}")
   [[ -n "${NAMESPACE}" ]] && NOMAD_ARGS+=("-namespace=${NAMESPACE}")
   [[ -n "${CACERT_FILE}" ]] && NOMAD_ARGS+=("-ca-cert=${CACERT_FILE}")
+  [[ -n "${CLIENT_CERT_FILE}" ]] && NOMAD_ARGS+=("-client-cert=${CLIENT_CERT_FILE}")
+  [[ -n "${CLIENT_KEY_FILE}" ]] && NOMAD_ARGS+=("-client-key=${CLIENT_KEY_FILE}")
   [[ "${TLS_SKIP_VERIFY}" == "true" ]] && NOMAD_ARGS+=("-tls-skip-verify")
 
   local META_ARGS=()
@@ -119,6 +135,8 @@ dispatch_with_http() {
   [[ -n "${NAMESPACE}" ]] && CURL_ARGS+=("-H" "X-Nomad-Namespace: ${NAMESPACE}")
   [[ "${TLS_SKIP_VERIFY}" == "true" ]] && CURL_ARGS+=("-k")
   [[ -n "${CACERT_FILE}" ]] && CURL_ARGS+=("--cacert" "${CACERT_FILE}")
+  [[ -n "${CLIENT_CERT_FILE}" ]] && CURL_ARGS+=("--cert" "${CLIENT_CERT_FILE}")
+  [[ -n "${CLIENT_KEY_FILE}" ]] && CURL_ARGS+=("--key" "${CLIENT_KEY_FILE}")
 
   local PAYLOAD_B64=""
   if [[ -n "${PAYLOAD}" ]]; then
@@ -174,6 +192,8 @@ wait_with_cli() {
   [[ -n "${REGION}" ]] && NOMAD_ARGS+=("-region=${REGION}")
   [[ -n "${NAMESPACE}" ]] && NOMAD_ARGS+=("-namespace=${NAMESPACE}")
   [[ -n "${CACERT_FILE}" ]] && NOMAD_ARGS+=("-ca-cert=${CACERT_FILE}")
+  [[ -n "${CLIENT_CERT_FILE}" ]] && NOMAD_ARGS+=("-client-cert=${CLIENT_CERT_FILE}")
+  [[ -n "${CLIENT_KEY_FILE}" ]] && NOMAD_ARGS+=("-client-key=${CLIENT_KEY_FILE}")
   [[ "${TLS_SKIP_VERIFY}" == "true" ]] && NOMAD_ARGS+=("-tls-skip-verify")
 
   local ALLOC_IDS=()
@@ -242,6 +262,8 @@ wait_with_http() {
   [[ -n "${NAMESPACE}" ]] && CURL_ARGS+=("-H" "X-Nomad-Namespace: ${NAMESPACE}")
   [[ "${TLS_SKIP_VERIFY}" == "true" ]] && CURL_ARGS+=("-k")
   [[ -n "${CACERT_FILE}" ]] && CURL_ARGS+=("--cacert" "${CACERT_FILE}")
+  [[ -n "${CLIENT_CERT_FILE}" ]] && CURL_ARGS+=("--cert" "${CLIENT_CERT_FILE}")
+  [[ -n "${CLIENT_KEY_FILE}" ]] && CURL_ARGS+=("--key" "${CLIENT_KEY_FILE}")
 
   local ALLOC_IDS=()
   local eval_url="${NOMAD_ADDR%/}/v1/eval/${EVAL_ID}"
