@@ -11,8 +11,7 @@ SCRIPT_DIR="$(dirname "${BASH_SOURCE[0]}")"
 source "${SCRIPT_DIR}/common.sh"
 source "${SCRIPT_DIR}/certificates.sh"
 source "${SCRIPT_DIR}/meta.sh"
-source "${SCRIPT_DIR}/cli_dispatch.sh"
-source "${SCRIPT_DIR}/http_dispatch.sh"
+source "${SCRIPT_DIR}/dispatcher.sh"
 source "${SCRIPT_DIR}/wait.sh"
 source "${SCRIPT_DIR}/logs.sh"
 
@@ -47,33 +46,22 @@ if ! command -v jq >/dev/null; then err "jq not found"; exit 2; fi
 setup_certificates
 process_meta
 
-# Determine dispatch method
-use_cli=false
-if command -v nomad >/dev/null 2>&1; then
-  use_cli=true
+# Check for Nomad CLI availability
+if ! command -v nomad >/dev/null 2>&1; then
+  err "nomad CLI not found - this should not happen as it's installed by setup-nomad"
+  exit 2
 fi
 
 # Global variables for dispatch results
 EVAL_ID=""
 DISPATCHED_JOB_ID=""
 
-# Dispatch
-if [[ "${use_cli}" == true ]]; then
-  if ! dispatch_with_cli; then
-    note "Falling back to HTTP API dispatch"
-    dispatch_with_http
-  fi
-else
-  dispatch_with_http
-fi
+# Dispatching the job
+run_dispatch
 
 # Optionally wait
 if [[ "${WAIT}" == "true" ]]; then
-  if command -v nomad >/dev/null 2>&1; then
-    wait_with_cli || exit $?
-  else
-    wait_with_http || exit $?
-  fi
+  wait_dispatch || exit $?
 fi
 
 exit 0

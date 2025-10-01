@@ -1,5 +1,5 @@
 name: "Nomad Dispatch"
-description: "Dispatch a HashiCorp Nomad parameterized job via HTTP API (composite action)."
+description: "Dispatch a HashiCorp Nomad parameterized job via Nomad CLI (composite action)."
 author: "nomad-dispatch maintainers"
 
 inputs:
@@ -97,7 +97,7 @@ runs:
         set -euo pipefail
         command -v curl >/dev/null || { echo "curl is required"; exit 1; }
         command -v jq >/dev/null || { echo "jq is required"; exit 1; }
-        # Nomad CLI is installed for convenience, though the action uses HTTP API
+        # Nomad CLI is required and used for all dispatch operations
         command -v nomad >/dev/null && nomad version || true
 
     - name: Nomad Dispatch

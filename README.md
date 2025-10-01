@@ -1,6 +1,6 @@
 Nomad Dispatch — GitHub Composite Action
 
-Dispatch a HashiCorp Nomad parameterized job. By default, it uses the Nomad CLI (installed via hashicorp/setup-nomad) and falls back to the HTTP API with curl + jq if the CLI is unavailable or fails.
+Dispatch a HashiCorp Nomad parameterized job using the Nomad CLI (installed via hashicorp/setup-nomad).
 
 Inputs
 - nomad_addr: Nomad HTTP address (e.g., https://nomad.example.com:4646). Required.
@@ -92,8 +92,8 @@ TLS Options
 - Provide a CA certificate via `ca_pem: ${{ secrets.NOMAD_CA_PEM }}` to trust a custom CA.
 
 Notes
-- The action installs Nomad using `hashicorp/setup-nomad@v2` (configurable via `nomad_version`) and uses `nomad job dispatch` by default. If the CLI is not available or dispatch parsing fails, it falls back to the HTTP API `POST /v1/job/:job/dispatch`.
-- For `print_logs: true`, set `task_name` to a task within the dispatched allocation. Logs are fetched with `nomad alloc logs` when using CLI, or `/v1/client/fs/logs/...` when using HTTP fallback.
+- The action installs Nomad using `hashicorp/setup-nomad@main` (configurable via `nomad_version`) and uses `nomad job dispatch` for all dispatch operations.
+- For `print_logs: true`, set `task_name` to a task within the dispatched allocation. Logs are fetched with `nomad alloc logs`.
 - Requires `curl` and `jq` (available on ubuntu-latest runners).
 - The parameterized job must be defined in Nomad with appropriate payload/meta handling for the command you intend to run.
 

@@ -30,26 +30,3 @@ fetch_logs_with_cli() {
   fi
 }
 
-fetch_logs_with_http() {
-  local ALLOC_IDS=("$@")
-  local CURL_ARGS=("-sS" "-H" "X-Nomad-Token: ${NOMAD_TOKEN}" "-H" "Content-Type: application/json")
-  [[ -n "${REGION}" ]] && CURL_ARGS+=("-H" "X-Nomad-Region: ${REGION}")
-  [[ -n "${NAMESPACE}" ]] && CURL_ARGS+=("-H" "X-Nomad-Namespace: ${NAMESPACE}")
-  [[ "${TLS_SKIP_VERIFY}" == "true" ]] && CURL_ARGS+=("-k")
-  [[ -n "${CACERT_FILE}" ]] && CURL_ARGS+=("--cacert" "${CACERT_FILE}")
-  [[ -n "${CLIENT_CERT_FILE}" ]] && CURL_ARGS+=("--cert" "${CLIENT_CERT_FILE}")
-  [[ -n "${CLIENT_KEY_FILE}" ]] && CURL_ARGS+=("--key" "${CLIENT_KEY_FILE}")
-
-  if [[ "${PRINT_LOGS}" == "true" && -n "${TASK_NAME}" ]]; then
-    note "Fetching logs for task '${TASK_NAME}' via HTTP API"
-    for aid in "${ALLOC_IDS[@]}"; do
-      local base="${NOMAD_ADDR%/}/v1/client/fs/logs/${aid}?task=${TASK_NAME}&follow=false&plain=true"
-      echo "===== ${aid} stdout ====="
-      curl -sS "${CURL_ARGS[@]}" "${base}&type=stdout" || true
-      echo
-      echo "===== ${aid} stderr ====="
-      curl -sS "${CURL_ARGS[@]}" "${base}&type=stderr" || true
-      echo
-    done
-  fi
-}

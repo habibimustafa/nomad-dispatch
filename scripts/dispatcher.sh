@@ -4,7 +4,7 @@
 
 source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
 
-dispatch_with_cli() {
+run_dispatch() {
   local out rc=0
   local NOMAD_ARGS=(
     "-address=${NOMAD_ADDR}"
