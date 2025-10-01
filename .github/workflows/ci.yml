@@ -148,6 +148,26 @@ jobs:
           nomad_version: "1.8.3"
           dry_run: true
 
+  dry-run-with-oidc:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dry-run dispatch with OIDC authentication
+        uses: ./
+        with:
+          nomad_addr: https://example.invalid:4646
+          oidc_enable: true
+          oidc_audience: nomad.example.com
+          job_name: dummy-job
+          payload: "OIDC authenticated job"
+          meta: |
+            auth_method: oidc
+            github_actor: ${{ github.actor }}
+          dry_run: true
+
   dry-run-comprehensive:
     runs-on: ubuntu-latest
     steps:

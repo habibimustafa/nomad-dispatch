@@ -4,7 +4,9 @@ Dispatch a HashiCorp Nomad parameterized job using the Nomad CLI (installed via 
 
 Inputs
 - nomad_addr: Nomad HTTP address (e.g., https://nomad.example.com:4646). Required.
-- nomad_token: Nomad ACL token. Required.
+- nomad_token: Nomad ACL token (required unless using OIDC authentication).
+- oidc_enable: Enable OIDC authentication to get Nomad token from GitHub. Default: false.
+- oidc_audience: OIDC audience for token request. Default: nomad.example.com.
 - job_name: Parameterized Nomad job name to dispatch. Required.
 - payload: Optional raw string payload (will be base64 encoded).
 - meta: Optional metadata as YAML object or JSON string (e.g., key1: val1, key2: val2 or {"key1":"val1"}). Default: {}.
@@ -86,6 +88,33 @@ To validate configuration without dispatching:
           payload: "test"
           dry_run: true
 ```
+
+OIDC Authentication
+Instead of using a pre-configured `nomad_token`, you can enable OIDC authentication to automatically obtain a Nomad token using GitHub's OIDC provider:
+
+```yaml
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write  # Required for OIDC
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dispatch with OIDC
+        uses: ./
+        with:
+          nomad_addr: ${{ secrets.NOMAD_ADDR }}
+          oidc_enable: true
+          oidc_audience: "nomad.example.com"
+          job_name: my-parameterized-job
+          payload: "authenticated via OIDC"
+```
+
+**Requirements for OIDC authentication:**
+- The workflow must have `id-token: write` permission
+- Nomad must be configured with OIDC authentication method
+- The `oidc_audience` should match your Nomad OIDC configuration
 
 TLS Options
 - Set `tls_skip_verify: true` to bypass verification (not recommended for production).

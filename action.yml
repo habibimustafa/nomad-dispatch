@@ -7,8 +7,17 @@ inputs:
     description: "Nomad HTTP address (e.g., https://nomad.example.com:4646)"
     required: true
   nomad_token:
-    description: "Nomad ACL token"
-    required: true
+    description: "Nomad ACL token (required unless using OIDC authentication)"
+    required: false
+    default: ""
+  oidc_enable:
+    description: "Enable OIDC authentication to get Nomad token from GitHub"
+    required: false
+    default: "false"
+  oidc_audience:
+    description: "OIDC audience for token request (default: nomad.example.com)"
+    required: false
+    default: "nomad.example.com"
   job_name:
     description: "Parameterized Nomad job name to dispatch"
     required: true
@@ -106,6 +115,8 @@ runs:
       env:
         NOMAD_ADDR: ${{ inputs.nomad_addr }}
         NOMAD_TOKEN: ${{ inputs.nomad_token }}
+        OIDC_ENABLE: ${{ inputs.oidc_enable }}
+        OIDC_AUDIENCE: ${{ inputs.oidc_audience }}
         JOB_NAME: ${{ inputs.job_name }}
         PAYLOAD: ${{ inputs.payload }}
         META: ${{ inputs.meta }}

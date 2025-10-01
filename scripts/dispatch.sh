@@ -11,6 +11,7 @@ SCRIPT_DIR="$(dirname "${BASH_SOURCE[0]}")"
 source "${SCRIPT_DIR}/common.sh"
 source "${SCRIPT_DIR}/certificates.sh"
 source "${SCRIPT_DIR}/meta.sh"
+source "${SCRIPT_DIR}/oidc.sh"
 source "${SCRIPT_DIR}/dispatcher.sh"
 source "${SCRIPT_DIR}/wait.sh"
 source "${SCRIPT_DIR}/logs.sh"
@@ -18,6 +19,8 @@ source "${SCRIPT_DIR}/logs.sh"
 # Inputs via env
 NOMAD_ADDR=${NOMAD_ADDR:-}
 NOMAD_TOKEN=${NOMAD_TOKEN:-}
+OIDC_ENABLE=${OIDC_ENABLE:-false}
+OIDC_AUDIENCE=${OIDC_AUDIENCE:-nomad.example.com}
 JOB_NAME=${JOB_NAME:-}
 PAYLOAD=${PAYLOAD:-}
 META=${META:-"{}"}
@@ -35,7 +38,6 @@ DRY_RUN=${DRY_RUN:-false}
 
 # Validate required inputs
 require "nomad_addr" "$NOMAD_ADDR"
-require "nomad_token" "$NOMAD_TOKEN"
 require "job_name" "$JOB_NAME"
 
 # Check for required tools
@@ -45,6 +47,13 @@ if ! command -v jq >/dev/null; then err "jq not found"; exit 2; fi
 # Setup certificates and process meta data
 setup_certificates
 process_meta
+
+# Get OIDC token if enabled, otherwise validate provided token
+get_oidc_token
+if [[ -z "$NOMAD_TOKEN" ]]; then
+  err "nomad_token is required when OIDC authentication is disabled"
+  exit 2
+fi
 
 # Check for Nomad CLI availability
 if ! command -v nomad >/dev/null 2>&1; then
