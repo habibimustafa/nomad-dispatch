@@ -16,8 +16,8 @@ inputs:
     description: "Optional raw string payload (will be base64 encoded)"
     required: false
     default: ""
-  meta_json:
-    description: "Optional JSON object string for Meta (e.g., {\"key\":\"val\"})"
+  meta:
+    description: "Optional metadata as YAML object or JSON string (e.g., key1: val1, key2: val2 or {\"key1\":\"val1\"})"
     required: false
     default: "{}"
   region:
@@ -108,7 +108,7 @@ runs:
         NOMAD_TOKEN: ${{ inputs.nomad_token }}
         JOB_NAME: ${{ inputs.job_name }}
         PAYLOAD: ${{ inputs.payload }}
-        META_JSON: ${{ inputs.meta_json }}
+        META: ${{ inputs.meta }}
         REGION: ${{ inputs.region }}
         NAMESPACE: ${{ inputs.namespace }}
         TLS_SKIP_VERIFY: ${{ inputs.tls_skip_verify }}

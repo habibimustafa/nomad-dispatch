@@ -7,7 +7,7 @@ Inputs
 - nomad_token: Nomad ACL token. Required.
 - job_name: Parameterized Nomad job name to dispatch. Required.
 - payload: Optional raw string payload (will be base64 encoded).
-- meta_json: Optional JSON string for Meta (e.g., {"key":"val"}). Default: {}.
+- meta: Optional metadata as YAML object or JSON string (e.g., key1: val1, key2: val2 or {"key1":"val1"}). Default: {}.
 - region: Optional Nomad region.
 - namespace: Optional Nomad namespace.
 - tls_skip_verify: Skip TLS verification (insecure). Default: false.
@@ -41,7 +41,10 @@ jobs:
           nomad_token: ${{ secrets.NOMAD_TOKEN }}
           job_name: my-parameterized-job
           payload: "echo hello from GH Actions"
-          meta_json: '{"trigger":"gh-actions","commit":"${{ github.sha }}"}'
+          meta: |
+            trigger: gh-actions
+            commit: ${{ github.sha }}
+            build_id: ${{ github.run_id }}
           region: ""
           namespace: "default"
           wait: true
@@ -53,6 +56,22 @@ jobs:
           echo "Dispatched: ${{ steps.dispatch.outputs.dispatched_job_id }}"
           echo "Eval: ${{ steps.dispatch.outputs.eval_id }}"
           echo "Status: ${{ steps.dispatch.outputs.status }}"
+```
+
+Metadata Formats
+The `meta` parameter accepts both YAML and JSON formats:
+
+**YAML format (recommended):**
+```yaml
+meta: |
+  environment: production
+  version: "1.2.3"
+  debug: false
+```
+
+**JSON format (backward compatibility):**
+```yaml
+meta: '{"environment":"production","version":"1.2.3","debug":false}'
 ```
 
 Dry Run

@@ -31,7 +31,24 @@ jobs:
           nomad_token: dummy
           job_name: dummy-job
           payload: "test payload with meta"
-          meta_json: '{"env":"test","version":"1.0","debug":"true"}'
+          meta: |
+            env: test
+            version: "1.0"
+            debug: "true"
+          dry_run: true
+
+  dry-run-with-meta-json:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dry-run dispatch with meta (JSON backward compatibility)
+        uses: ./
+        with:
+          nomad_addr: https://example.invalid:4646
+          nomad_token: dummy
+          job_name: dummy-job
+          payload: "test payload with JSON meta"
+          meta: '{"env":"production","version":"2.0","feature_flag":"enabled"}'
           dry_run: true
 
   dry-run-with-region-namespace:
@@ -142,7 +159,10 @@ jobs:
           nomad_token: dummy
           job_name: dummy-job
           payload: "comprehensive test with all options"
-          meta_json: '{"test_type":"comprehensive","parameters":"all"}'
+          meta: |
+            test_type: comprehensive
+            parameters: all
+            build_number: 12345
           region: global
           namespace: testing
           tls_skip_verify: false
