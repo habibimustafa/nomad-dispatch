@@ -1,0 +1,22 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  dry-run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dry-run dispatch
+        uses: ./
+        with:
+          nomad_addr: https://example.invalid:4646
+          nomad_token: dummy
+          job_name: dummy-job
+          payload: "noop"
+          dry_run: true
+

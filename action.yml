@@ -1,0 +1,114 @@
+name: "Nomad Dispatch"
+description: "Dispatch a HashiCorp Nomad parameterized job via HTTP API (composite action)."
+author: "nomad-dispatch maintainers"
+
+inputs:
+  nomad_addr:
+    description: "Nomad HTTP address (e.g., https://nomad.example.com:4646)"
+    required: true
+  nomad_token:
+    description: "Nomad ACL token"
+    required: true
+  job_name:
+    description: "Parameterized Nomad job name to dispatch"
+    required: true
+  payload:
+    description: "Optional raw string payload (will be base64 encoded)"
+    required: false
+    default: ""
+  meta_json:
+    description: "Optional JSON object string for Meta (e.g., {\"key\":\"val\"})"
+    required: false
+    default: "{}"
+  region:
+    description: "Optional Nomad region"
+    required: false
+    default: ""
+  namespace:
+    description: "Optional Nomad namespace"
+    required: false
+    default: ""
+  tls_skip_verify:
+    description: "Skip TLS verification (insecure)"
+    required: false
+    default: "false"
+  ca_pem:
+    description: "Optional CA certificate content (PEM)"
+    required: false
+    default: ""
+  wait:
+    description: "Wait for allocation(s) to finish"
+    required: false
+    default: "false"
+  wait_timeout:
+    description: "Seconds to wait when wait=true"
+    required: false
+    default: "300"
+  print_logs:
+    description: "Print task logs when done (requires task_name)"
+    required: false
+    default: "false"
+  task_name:
+    description: "Task name to fetch logs for when print_logs=true"
+    required: false
+    default: ""
+  dry_run:
+    description: "Print request and exit without dispatching"
+    required: false
+    default: "false"
+  nomad_version:
+    description: "Nomad CLI version to install via hashicorp/setup-nomad (e.g., 'latest' or '1.8.3')"
+    required: false
+    default: "latest"
+
+outputs:
+  dispatched_job_id:
+    description: "The dispatched job ID"
+    value: ${{ steps.dispatch.outputs.dispatched_job_id }}
+  eval_id:
+    description: "The evaluation ID"
+    value: ${{ steps.dispatch.outputs.eval_id }}
+  alloc_ids:
+    description: "JSON array of allocation IDs (if waited)"
+    value: ${{ steps.dispatch.outputs.alloc_ids }}
+  status:
+    description: "Final status: complete|failed|timeout|dispatched"
+    value: ${{ steps.dispatch.outputs.status }}
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Nomad CLI
+      uses: hashicorp/setup-nomad@v2
+      with:
+        nomad-version: ${{ inputs.nomad_version }}
+
+    - name: Verify prerequisites
+      shell: bash
+      run: |
+        set -euo pipefail
+        command -v curl >/dev/null || { echo "curl is required"; exit 1; }
+        command -v jq >/dev/null || { echo "jq is required"; exit 1; }
+        # Nomad CLI is installed for convenience, though the action uses HTTP API
+        command -v nomad >/dev/null && nomad version || true
+
+    - name: Nomad Dispatch
+      id: dispatch
+      shell: bash
+      env:
+        NOMAD_ADDR: ${{ inputs.nomad_addr }}
+        NOMAD_TOKEN: ${{ inputs.nomad_token }}
+        JOB_NAME: ${{ inputs.job_name }}
+        PAYLOAD: ${{ inputs.payload }}
+        META_JSON: ${{ inputs.meta_json }}
+        REGION: ${{ inputs.region }}
+        NAMESPACE: ${{ inputs.namespace }}
+        TLS_SKIP_VERIFY: ${{ inputs.tls_skip_verify }}
+        CA_PEM: ${{ inputs.ca_pem }}
+        WAIT: ${{ inputs.wait }}
+        WAIT_TIMEOUT: ${{ inputs.wait_timeout }}
+        PRINT_LOGS: ${{ inputs.print_logs }}
+        TASK_NAME: ${{ inputs.task_name }}
+        DRY_RUN: ${{ inputs.dry_run }}
+      run: |
+        bash "${{ github.action_path }}/scripts/dispatch.sh"
