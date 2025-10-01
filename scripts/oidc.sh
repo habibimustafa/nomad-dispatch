@@ -34,7 +34,7 @@ get_oidc_token() {
   curl_args+=("-s")
   curl_args+=("-X" "POST")
   curl_args+=("-H" "Content-Type: application/json")
-  curl_args+=("-d" "{\"AuthMethod\":\"oidc\",\"JWT\":\"${github_token}\"}")
+  curl_args+=("-d" "{\"AuthMethod\":\"github\",\"JWT\":\"${github_token}\"}")
 
   # Add TLS options
   if [[ "${TLS_SKIP_VERIFY}" == "true" ]]; then
@@ -49,7 +49,7 @@ get_oidc_token() {
   fi
 
   local nomad_auth_response
-  nomad_auth_response=$(curl "${curl_args[@]}" "${NOMAD_ADDR}/v1/acl/oidc/auth")
+  nomad_auth_response=$(curl "${curl_args[@]}" "${NOMAD_ADDR}/v1/acl/login")
 
   if [[ $? -ne 0 ]]; then
     err "Failed to authenticate with Nomad using OIDC"
