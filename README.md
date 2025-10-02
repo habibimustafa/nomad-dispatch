@@ -33,7 +33,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Dispatch parameterized job
-        uses: ./
+        uses: habibimustafa/nomad-dispatch@v0.0.1
         with:
           nomad_addr: ${{ secrets.NOMAD_ADDR }}
           nomad_token: ${{ secrets.NOMAD_TOKEN }}
@@ -72,7 +72,7 @@ meta: '{"environment":"production","version":"1.2.3","debug":false}'
 To validate configuration without dispatching:
 
 ```yaml
-      - uses: ./
+      - uses: habibimustafa/nomad-dispatch@v0.0.1
         with:
           nomad_addr: ${{ secrets.NOMAD_ADDR }}
           nomad_token: ${{ secrets.NOMAD_TOKEN }}
@@ -94,7 +94,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Dispatch with OIDC
-        uses: ./
+        uses: habibimustafa/nomad-dispatch@v0.0.1
         with:
           nomad_addr: ${{ secrets.NOMAD_ADDR }}
           oidc_enable: true
