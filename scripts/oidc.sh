@@ -34,7 +34,7 @@ get_oidc_token() {
   curl_args+=("-s")
   curl_args+=("-X" "POST")
   curl_args+=("-H" "Content-Type: application/json")
-  curl_args+=("-d" "{\"AuthMethod\":\"github\",\"JWT\":\"${github_token}\"}")
+  curl_args+=("-d" "{\"AuthMethodName\":\"github\",\"LoginToken\":\"${github_token}\"}")
 
   # Add TLS options
   if [[ "${TLS_SKIP_VERIFY}" == "true" ]]; then
