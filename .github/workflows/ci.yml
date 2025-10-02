@@ -102,21 +102,6 @@ jobs:
             -----END PRIVATE KEY-----
           dry_run: true
 
-  dry-run-with-live-logs:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Dry-run dispatch with live logs
-        uses: ./
-        with:
-          nomad_addr: https://example.invalid:4646
-          nomad_token: dummy
-          job_name: dummy-job
-          payload: "live logs job"
-          live_logs: true
-          task_name: main
-          dry_run: true
-
   dry-run-empty-payload:
     runs-on: ubuntu-latest
     steps:
@@ -176,7 +161,7 @@ jobs:
           nomad_addr: https://example.invalid:4646
           oidc_enable: true
           oidc_audience: nomad.example.com
-          debug: true
+          oidc_debug: true
           job_name: dummy-job
           payload: "OIDC debug test"
           meta: |
@@ -202,8 +187,6 @@ jobs:
           region: global
           namespace: testing
           tls_skip_verify: false
-          live_logs: true
-          task_name: main
           nomad_version: latest
           dry_run: true
 
@@ -223,7 +206,7 @@ jobs:
             test_type: dispatch_debug
           region: us-east-1
           namespace: debug
-          debug: true
+          dispatch_debug: true
           dry_run: true
 
   dry-run-with-meta-spaces:
@@ -241,7 +224,7 @@ jobs:
             user_cmd: echo "hello from github"
             description: test with multiple spaces
             script_path: /path/to script with spaces.sh
-          debug: true
+          dispatch_debug: true
           dry_run: true
 
   dry-run-with-meta-quotes:
@@ -260,44 +243,5 @@ jobs:
             backtick_cmd: echo `hello from github`
             mixed_quotes: echo "hello" 'world' `test`
             complex_script: /path/to/script 'with quotes'.sh
-          debug: true
+          dispatch_debug: true
           dry_run: true
-
-  dry-run-with-live-logs:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Dry-run dispatch with live logs enabled
-        uses: ./
-        with:
-          nomad_addr: https://example.invalid:4646
-          nomad_token: dummy
-          job_name: dummy-job
-          payload: "test with live logs"
-          meta: |
-            log_test: enabled
-            feature: live_logs
-          live_logs: true
-          task_name: main
-          dry_run: true
-
-  dry-run-with-stream-termination:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Dry-run dispatch with stream termination options
-        uses: ./
-        with:
-          nomad_addr: https://example.invalid:4646
-          nomad_token: dummy
-          job_name: dummy-job
-          payload: "test with stream termination"
-          meta: |
-            log_test: stream_termination
-            feature: auto_close
-          live_logs: true
-          stream_timeout: 120
-          auto_close_on_complete: true
-          task_name: main
-          dry_run: true
-
