@@ -1,8 +1,8 @@
-Nomad Dispatch — GitHub Composite Action
+# Nomad Dispatch Action
 
 Dispatch a HashiCorp Nomad parameterized job using the Nomad CLI (installed via hashicorp/setup-nomad).
 
-Inputs
+## Inputs
 - nomad_addr: Nomad HTTP address (e.g., https://nomad.example.com:4646). Required.
 - nomad_token: Nomad ACL token (required unless using OIDC authentication).
 - oidc_enable: Enable OIDC authentication to get Nomad token from GitHub. Default: false.
@@ -18,12 +18,12 @@ Inputs
 - dry_run: Print request and exit without dispatching. Default: false.
 - nomad_version: Nomad CLI version installed by setup-nomad (e.g., latest or 1.8.3). Default: latest.
 
-Outputs
+## Outputs
 - dispatched_job_id: The dispatched job ID.
 - eval_id: The evaluation ID.
 - status: Always dispatched.
 
-Usage
+## Usage
 Example workflow step dispatching a parameterized job with live log streaming:
 
 ```yaml
@@ -52,7 +52,7 @@ jobs:
           echo "Status: ${{ steps.dispatch.outputs.status }}"
 ```
 
-Metadata Formats
+### Metadata Formats
 The `meta` parameter accepts both YAML and JSON formats:
 
 **YAML format (recommended):**
@@ -68,7 +68,7 @@ meta: |
 meta: '{"environment":"production","version":"1.2.3","debug":false}'
 ```
 
-Dry Run
+### Dry Run
 To validate configuration without dispatching:
 
 ```yaml
@@ -81,7 +81,7 @@ To validate configuration without dispatching:
           dry_run: true
 ```
 
-OIDC Authentication
+### OIDC Authentication
 Instead of using a pre-configured `nomad_token`, you can enable OIDC authentication to automatically obtain a Nomad token using GitHub's OIDC provider:
 
 ```yaml
@@ -116,10 +116,10 @@ TLS Options
 - Set `tls_skip_verify: true` to bypass verification (not recommended for production).
 - Provide a CA certificate via `ca_pem: ${{ secrets.NOMAD_CA_PEM }}` to trust a custom CA.
 
-Notes
+## Notes
 - The action installs Nomad using `hashicorp/setup-nomad@main` (configurable via `nomad_version`) and uses `nomad job dispatch` for all dispatch operations.
 - Requires `curl` and `jq` (available on ubuntu-latest runners).
 - The parameterized job must be defined in Nomad with appropriate payload/meta handling for the command you intend to run.
 
-License
+## License
 This action is provided as-is under your repository license.
