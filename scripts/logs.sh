@@ -60,13 +60,16 @@ stream_logs_with_monitoring() {
   cleanup_streaming() {
     local log_pid="$1"
     local monitor_pid="$2"
+    local pipe_log="$3"
+    local pipe_monitor="$4"
 
     # Kill background processes
     [[ -n "${log_pid}" ]] && kill "${log_pid}" 2>/dev/null || true
     [[ -n "${monitor_pid}" ]] && kill "${monitor_pid}" 2>/dev/null || true
 
     # Clean up pipes
-    rm -f "${log_pipe}" "${monitor_pipe}" 2>/dev/null || true
+    [[ -n "${pipe_log}" ]] && rm -f "${pipe_log}" 2>/dev/null || true
+    [[ -n "${pipe_monitor}" ]] && rm -f "${pipe_monitor}" 2>/dev/null || true
 
     note "Log streaming terminated"
   }
@@ -102,7 +105,7 @@ stream_logs_with_monitoring() {
   local stream_timeout_seconds="${STREAM_TIMEOUT}"
 
   # Set up signal handlers for cleanup
-  trap "cleanup_streaming '${log_pid}' '${monitor_pid}'" EXIT INT TERM
+  trap "cleanup_streaming '${log_pid}' '${monitor_pid}' '${log_pipe}' '${monitor_pipe}'" EXIT INT TERM
 
   while true; do
     local current_time=$(date +%s)
