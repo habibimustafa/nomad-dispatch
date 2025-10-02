@@ -57,22 +57,6 @@ inputs:
     description: "Optional client private key content (PEM)"
     required: false
     default: ""
-  live_logs:
-    description: "Show live allocation logs immediately after dispatch (requires task_name)"
-    required: false
-    default: "true"
-  stream_timeout:
-    description: "Seconds to wait for log activity before closing stream (0 = no timeout)"
-    required: false
-    default: "300"
-  auto_close_on_complete:
-    description: "Automatically close log stream when allocation completes"
-    required: false
-    default: "true"
-  task_name:
-    description: "Task name to fetch logs for when print_logs=true or live_logs=true"
-    required: false
-    default: ""
   dry_run:
     description: "Print request and exit without dispatching"
     required: false
@@ -132,10 +116,6 @@ runs:
         CA_PEM: ${{ inputs.ca_pem }}
         CLIENT_CERT: ${{ inputs.client_cert }}
         CLIENT_KEY: ${{ inputs.client_key }}
-        LIVE_LOGS: ${{ inputs.live_logs }}
-        STREAM_TIMEOUT: ${{ inputs.stream_timeout }}
-        AUTO_CLOSE_ON_COMPLETE: ${{ inputs.auto_close_on_complete }}
-        TASK_NAME: ${{ inputs.task_name }}
         DRY_RUN: ${{ inputs.dry_run }}
         DISPATCH_DEBUG: ${{ inputs.dispatch_debug }}
       run: |

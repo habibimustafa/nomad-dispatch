@@ -15,10 +15,6 @@ Inputs
 - namespace: Optional Nomad namespace.
 - tls_skip_verify: Skip TLS verification (insecure). Default: false.
 - ca_pem: Optional CA PEM content; if provided, written to a temp file and used with curl --cacert.
-- live_logs: Show live allocation logs immediately after dispatch (requires task_name). Default: true.
-- stream_timeout: Seconds to wait for log activity before closing stream (0 = no timeout). Default: 300.
-- auto_close_on_complete: Automatically close log stream when allocation completes. Default: true.
-- task_name: Task name to fetch logs for when live_logs=true.
 - dry_run: Print request and exit without dispatching. Default: false.
 - nomad_version: Nomad CLI version installed by setup-nomad (e.g., latest or 1.8.3). Default: latest.
 
@@ -49,44 +45,11 @@ jobs:
             build_id: ${{ github.run_id }}
           region: ""
           namespace: "default"
-          live_logs: true
-          task_name: "runner"
       - name: Result
         run: |
           echo "Dispatched: ${{ steps.dispatch.outputs.dispatched_job_id }}"
           echo "Eval: ${{ steps.dispatch.outputs.eval_id }}"
           echo "Status: ${{ steps.dispatch.outputs.status }}"
-```
-
-**Live Log Streaming:**
-Live log streaming is enabled by default. To disable it, set `live_logs: false`:
-
-```yaml
-      - name: Dispatch without live logs
-        uses: ./
-        with:
-          nomad_addr: ${{ secrets.NOMAD_ADDR }}
-          nomad_token: ${{ secrets.NOMAD_TOKEN }}
-          job_name: my-parameterized-job
-          payload: "echo hello without logs"
-          live_logs: false
-```
-
-**Automatic Stream Termination:**
-Control when live log streams automatically close:
-
-```yaml
-      - name: Dispatch with custom stream termination
-        uses: ./
-        with:
-          nomad_addr: ${{ secrets.NOMAD_ADDR }}
-          nomad_token: ${{ secrets.NOMAD_TOKEN }}
-          job_name: my-parameterized-job
-          payload: "long running job"
-          live_logs: true
-          stream_timeout: 600          # Close after 10 minutes of inactivity
-          auto_close_on_complete: true # Close when allocation completes
-          task_name: "runner"
 ```
 
 Metadata Formats
@@ -155,7 +118,6 @@ TLS Options
 
 Notes
 - The action installs Nomad using `hashicorp/setup-nomad@main` (configurable via `nomad_version`) and uses `nomad job dispatch` for all dispatch operations.
-- For live log streaming, set `task_name` to a task within the dispatched allocation. Logs are streamed with `nomad alloc logs -follow`.
 - Requires `curl` and `jq` (available on ubuntu-latest runners).
 - The parameterized job must be defined in Nomad with appropriate payload/meta handling for the command you intend to run.
 

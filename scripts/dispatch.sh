@@ -69,7 +69,4 @@ DISPATCHED_JOB_ID=""
 # Dispatching the job
 run_dispatch
 
-# Stream live logs if requested
-stream_live_logs
-
 exit 0
