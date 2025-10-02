@@ -20,14 +20,18 @@ run_dispatch() {
   local META_ARGS=()
   if (( ${#META_KV[@]} > 0 )); then
     for kv in "${META_KV[@]}"; do
-      # Quote the entire key=value pair if the value contains spaces or special characters
-      if [[ "$kv" =~ .*[[:space:]].* ]] || [[ "$kv" =~ .*[\'\`\$\\\"].* ]] || [[ "$kv" =~ .*[\(\)\[\]\{\}\|\&\;\<\>].* ]]; then
+      # Split key=value to process key and value separately
+      local key="${kv%%=*}"
+      local value="${kv#*=}"
+
+      # Quote and escape only the value if it contains spaces or special characters
+      if [[ "$value" =~ .*[[:space:]].* ]] || [[ "$value" =~ .*[\'\`\$\\\"].* ]] || [[ "$value" =~ .*[\(\)\[\]\{\}\|\&\;\<\>].* ]]; then
         # Use double quotes and escape internal double quotes, backslashes, backticks, and dollar signs
-        local escaped_kv="${kv//\\/\\\\}"  # Escape backslashes first
-        escaped_kv="${escaped_kv//\"/\\\"}"  # Escape double quotes
-        escaped_kv="${escaped_kv//\`/\\\`}"  # Escape backticks
-        escaped_kv="${escaped_kv//\$/\\\$}"  # Escape dollar signs
-        META_ARGS+=("-meta" "\"$escaped_kv\"")
+        local escaped_value="${value//\\/\\\\}"  # Escape backslashes first
+        escaped_value="${escaped_value//\"/\\\"}"  # Escape double quotes
+        escaped_value="${escaped_value//\`/\\\`}"  # Escape backticks
+        escaped_value="${escaped_value//\$/\\\$}"  # Escape dollar signs
+        META_ARGS+=("-meta" "${key}=\"${escaped_value}\"")
       else
         META_ARGS+=("-meta" "$kv")
       fi
