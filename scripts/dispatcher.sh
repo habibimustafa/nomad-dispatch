@@ -23,7 +23,7 @@ run_dispatch() {
   fi
 
   if [[ "${DRY_RUN}" == "true" ]]; then
-    note "dry_run=true; would run: nomad job dispatch ${META_ARGS[*]} ${JOB_NAME} ${PAYLOAD:+-}"
+    note "dry_run=true; would run: nomad job dispatch ${NOMAD_ARGS[*]} ${META_ARGS[*]} ${JOB_NAME} ${PAYLOAD:+-}"
     echo "status=dispatched" >>"${GITHUB_OUTPUT}"
     return 0
   fi
@@ -31,12 +31,12 @@ run_dispatch() {
   note "Dispatching with Nomad CLI to ${NOMAD_ADDR}"
   if [[ -n "${PAYLOAD}" ]]; then
     set +e
-    out=$(printf '%s' "${PAYLOAD}" | nomad "${NOMAD_ARGS[@]}" job dispatch "${META_ARGS[@]}" "${JOB_NAME}" - 2>&1)
+    out=$(printf '%s' "${PAYLOAD}" | nomad job dispatch "${NOMAD_ARGS[@]}" "${META_ARGS[@]}" "${JOB_NAME}" - 2>&1)
     rc=$?
     set -e
   else
     set +e
-    out=$(nomad "${NOMAD_ARGS[@]}" job dispatch "${META_ARGS[@]}" "${JOB_NAME}" 2>&1)
+    out=$(nomad job dispatch "${NOMAD_ARGS[@]}" "${META_ARGS[@]}" "${JOB_NAME}" 2>&1)
     rc=$?
     set -e
   fi

@@ -27,7 +27,7 @@ wait_dispatch() {
       return 124
     fi
     local EV_JSON
-    if ! EV_JSON=$(nomad "${NOMAD_ARGS[@]}" eval status -json "${EVAL_ID}" 2>/dev/null); then
+    if ! EV_JSON=$(nomad eval status "${NOMAD_ARGS[@]}" -json "${EVAL_ID}" 2>/dev/null); then
       sleep 2; continue
     fi
     mapfile -t ALLOC_IDS < <(printf '%s' "${EV_JSON}" | jq -r '.Allocations // [] | .[] | .ID')
@@ -36,7 +36,7 @@ wait_dispatch() {
     local all_complete=true any_failed=false
     for aid in "${ALLOC_IDS[@]}"; do
       local AJSON
-      if ! AJSON=$(nomad "${NOMAD_ARGS[@]}" alloc status -json "${aid}" 2>/dev/null); then all_complete=false; break; fi
+      if ! AJSON=$(nomad alloc status "${NOMAD_ARGS[@]}" -json "${aid}" 2>/dev/null); then all_complete=false; break; fi
       local cstatus dstatus
       cstatus=$(printf '%s' "${AJSON}" | jq -r '.ClientStatus // "unknown"')
       dstatus=$(printf '%s' "${AJSON}" | jq -r '.DesiredStatus // ""')

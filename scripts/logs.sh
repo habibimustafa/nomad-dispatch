@@ -21,10 +21,10 @@ fetch_logs_with_cli() {
     note "Fetching logs for task '${TASK_NAME}' via Nomad CLI"
     for aid in "${ALLOC_IDS[@]}"; do
       echo "===== ${aid} stdout ====="
-      nomad "${NOMAD_ARGS[@]}" alloc logs -no-color -stdout "${aid}" "${TASK_NAME}" || true
+      nomad alloc logs "${NOMAD_ARGS[@]}" -no-color -stdout "${aid}" "${TASK_NAME}" || true
       echo
       echo "===== ${aid} stderr ====="
-      nomad "${NOMAD_ARGS[@]}" alloc logs -no-color -stderr "${aid}" "${TASK_NAME}" || true
+      nomad alloc logs "${NOMAD_ARGS[@]}" -no-color -stderr "${aid}" "${TASK_NAME}" || true
       echo
     done
   fi
