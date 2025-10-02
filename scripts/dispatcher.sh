@@ -47,7 +47,7 @@ run_dispatch() {
   note "Dispatching with Nomad CLI to ${NOMAD_ADDR}"
 
   # Debug output to show the actual command
-  if [[ "${COMMAND_DEBUG}" == "true" ]]; then
+  if [[ "${DISPATCH_DEBUG}" == "true" ]]; then
     if [[ -n "${PAYLOAD}" ]]; then
       note "Command Debug: printf '%s' \"${PAYLOAD}\" | nomad job dispatch ${NOMAD_ARGS[*]} ${META_ARGS[*]} ${JOB_NAME} -"
     else

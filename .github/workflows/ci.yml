@@ -210,7 +210,7 @@ jobs:
           nomad_version: latest
           dry_run: true
 
-  dry-run-with-command-debug:
+  dry-run-with-dispatch-debug:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -223,10 +223,10 @@ jobs:
           payload: "debug test payload"
           meta: |
             debug_enabled: true
-            test_type: command_debug
+            test_type: dispatch_debug
           region: us-east-1
           namespace: debug
-          command_debug: true
+          dispatch_debug: true
           dry_run: true
 
   dry-run-with-meta-spaces:
@@ -244,7 +244,7 @@ jobs:
             user_cmd: echo "hello from github"
             description: test with multiple spaces
             script_path: /path/to script with spaces.sh
-          command_debug: true
+          dispatch_debug: true
           dry_run: true
 
   dry-run-with-meta-quotes:
@@ -263,6 +263,6 @@ jobs:
             backtick_cmd: echo `hello from github`
             mixed_quotes: echo "hello" 'world' `test`
             complex_script: /path/to/script 'with quotes'.sh
-          command_debug: true
+          dispatch_debug: true
           dry_run: true
 

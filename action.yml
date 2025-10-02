@@ -77,7 +77,7 @@ inputs:
     description: "Print request and exit without dispatching"
     required: false
     default: "false"
-  command_debug:
+  dispatch_debug:
     description: "Enable debug output to show the actual nomad command before execution"
     required: false
     default: "false"
@@ -140,6 +140,6 @@ runs:
         PRINT_LOGS: ${{ inputs.print_logs }}
         TASK_NAME: ${{ inputs.task_name }}
         DRY_RUN: ${{ inputs.dry_run }}
-        COMMAND_DEBUG: ${{ inputs.command_debug }}
+        DISPATCH_DEBUG: ${{ inputs.dispatch_debug }}
       run: |
         bash "${{ github.action_path }}/scripts/dispatch.sh"
