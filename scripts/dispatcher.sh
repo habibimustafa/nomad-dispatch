@@ -71,6 +71,10 @@ run_dispatch() {
     return ${rc}
   fi
 
+  if [[ "${COMMAND_DEBUG}" == "true" ]]; then
+    echo "${out}"
+  fi
+
   # Parse output for EvalID and DispatchedJobID
   EVAL_ID=$(echo "${out}" | sed -n 's/^Evaluation ID: *//p' | head -n1)
   DISPATCHED_JOB_ID=$(echo "${out}" | sed -n 's/^Dispatched Job ID: *//p' | head -n1)
