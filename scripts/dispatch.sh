@@ -13,7 +13,6 @@ source "${SCRIPT_DIR}/certificates.sh"
 source "${SCRIPT_DIR}/meta.sh"
 source "${SCRIPT_DIR}/oidc.sh"
 source "${SCRIPT_DIR}/dispatcher.sh"
-source "${SCRIPT_DIR}/wait.sh"
 source "${SCRIPT_DIR}/logs.sh"
 
 # Inputs via env
@@ -31,9 +30,9 @@ TLS_SKIP_VERIFY=${TLS_SKIP_VERIFY:-false}
 CA_PEM=${CA_PEM:-}
 CLIENT_CERT=${CLIENT_CERT:-}
 CLIENT_KEY=${CLIENT_KEY:-}
-WAIT=${WAIT:-false}
-WAIT_TIMEOUT=${WAIT_TIMEOUT:-300}
-PRINT_LOGS=${PRINT_LOGS:-false}
+LIVE_LOGS=${LIVE_LOGS:-true}
+STREAM_TIMEOUT=${STREAM_TIMEOUT:-300}
+AUTO_CLOSE_ON_COMPLETE=${AUTO_CLOSE_ON_COMPLETE:-true}
 TASK_NAME=${TASK_NAME:-}
 DRY_RUN=${DRY_RUN:-false}
 DISPATCH_DEBUG=${DISPATCH_DEBUG:-false}
@@ -70,9 +69,7 @@ DISPATCHED_JOB_ID=""
 # Dispatching the job
 run_dispatch
 
-# Optionally wait
-if [[ "${WAIT}" == "true" ]]; then
-  wait_dispatch || exit $?
-fi
+# Stream live logs if requested
+stream_live_logs
 
 exit 0

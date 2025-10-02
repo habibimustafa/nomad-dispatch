@@ -57,20 +57,20 @@ inputs:
     description: "Optional client private key content (PEM)"
     required: false
     default: ""
-  wait:
-    description: "Wait for allocation(s) to finish"
+  live_logs:
+    description: "Show live allocation logs immediately after dispatch (requires task_name)"
     required: false
-    default: "false"
-  wait_timeout:
-    description: "Seconds to wait when wait=true"
+    default: "true"
+  stream_timeout:
+    description: "Seconds to wait for log activity before closing stream (0 = no timeout)"
     required: false
     default: "300"
-  print_logs:
-    description: "Print task logs when done (requires task_name)"
+  auto_close_on_complete:
+    description: "Automatically close log stream when allocation completes"
     required: false
-    default: "false"
+    default: "true"
   task_name:
-    description: "Task name to fetch logs for when print_logs=true"
+    description: "Task name to fetch logs for when print_logs=true or live_logs=true"
     required: false
     default: ""
   dry_run:
@@ -93,11 +93,8 @@ outputs:
   eval_id:
     description: "The evaluation ID"
     value: ${{ steps.dispatch.outputs.eval_id }}
-  alloc_ids:
-    description: "JSON array of allocation IDs (if waited)"
-    value: ${{ steps.dispatch.outputs.alloc_ids }}
   status:
-    description: "Final status: complete|failed|timeout|dispatched"
+    description: "Final status: dispatched"
     value: ${{ steps.dispatch.outputs.status }}
 
 runs:
@@ -135,9 +132,9 @@ runs:
         CA_PEM: ${{ inputs.ca_pem }}
         CLIENT_CERT: ${{ inputs.client_cert }}
         CLIENT_KEY: ${{ inputs.client_key }}
-        WAIT: ${{ inputs.wait }}
-        WAIT_TIMEOUT: ${{ inputs.wait_timeout }}
-        PRINT_LOGS: ${{ inputs.print_logs }}
+        LIVE_LOGS: ${{ inputs.live_logs }}
+        STREAM_TIMEOUT: ${{ inputs.stream_timeout }}
+        AUTO_CLOSE_ON_COMPLETE: ${{ inputs.auto_close_on_complete }}
         TASK_NAME: ${{ inputs.task_name }}
         DRY_RUN: ${{ inputs.dry_run }}
         DISPATCH_DEBUG: ${{ inputs.dispatch_debug }}
