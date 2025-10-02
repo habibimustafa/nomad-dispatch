@@ -26,9 +26,9 @@ stream_live_logs() {
   note "Starting live log streaming for task '${TASK_NAME}'"
   while (( elapsed < timeout )); do
     local EV_JSON
-    if EV_JSON=$(nomad eval status "${NOMAD_ARGS[@]}" -json "${EVAL_ID}" 2>/dev/null); then
+    if EV_JSON=$(nomad job allocs "${NOMAD_ARGS[@]}" -json "${DISPATCHED_JOB_ID}" 2>/dev/null); then
       local ALLOC_IDS
-      mapfile -t ALLOC_IDS < <(printf '%s' "${EV_JSON}" | jq -r '.Allocations // [] | .[] | .ID')
+      mapfile -t ALLOC_IDS < <(printf '%s' "${EV_JSON}" | jq -r '.[] | .ID')
       if (( ${#ALLOC_IDS[@]} > 0 )); then
         # Stream logs from first available allocation
         local aid="${ALLOC_IDS[0]}"
