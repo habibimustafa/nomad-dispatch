@@ -178,7 +178,7 @@ jobs:
           nomad_addr: https://example.invalid:4646
           oidc_enable: true
           oidc_audience: nomad.example.com
-          oidc_debug: true
+          debug: true
           job_name: dummy-job
           payload: "OIDC debug test"
           meta: |
@@ -226,7 +226,7 @@ jobs:
             test_type: dispatch_debug
           region: us-east-1
           namespace: debug
-          dispatch_debug: true
+          debug: true
           dry_run: true
 
   dry-run-with-meta-spaces:
@@ -244,7 +244,7 @@ jobs:
             user_cmd: echo "hello from github"
             description: test with multiple spaces
             script_path: /path/to script with spaces.sh
-          dispatch_debug: true
+          debug: true
           dry_run: true
 
   dry-run-with-meta-quotes:
@@ -263,6 +263,6 @@ jobs:
             backtick_cmd: echo `hello from github`
             mixed_quotes: echo "hello" 'world' `test`
             complex_script: /path/to/script 'with quotes'.sh
-          dispatch_debug: true
+          debug: true
           dry_run: true
 
