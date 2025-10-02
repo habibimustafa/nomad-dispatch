@@ -18,6 +18,10 @@ inputs:
     description: "OIDC audience for token request (default: nomad.example.com)"
     required: false
     default: "nomad.example.com"
+  oidc_debug:
+    description: "Enable debug output for OIDC authentication responses"
+    required: false
+    default: "false"
   job_name:
     description: "Parameterized Nomad job name to dispatch"
     required: true
@@ -117,6 +121,7 @@ runs:
         NOMAD_TOKEN: ${{ inputs.nomad_token }}
         OIDC_ENABLE: ${{ inputs.oidc_enable }}
         OIDC_AUDIENCE: ${{ inputs.oidc_audience }}
+        OIDC_DEBUG: ${{ inputs.oidc_debug }}
         JOB_NAME: ${{ inputs.job_name }}
         PAYLOAD: ${{ inputs.payload }}
         META: ${{ inputs.meta }}

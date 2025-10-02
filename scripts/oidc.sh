@@ -56,6 +56,12 @@ get_oidc_token() {
     exit 2
   fi
 
+  # Debug output for the raw response
+  if [[ "${OIDC_DEBUG}" == "true" ]]; then
+    note "OIDC Debug: Raw Nomad auth response:"
+    echo "${nomad_auth_response}" >&2
+  fi
+
   # Extract token from response
   local nomad_token
   nomad_token=$(echo "${nomad_auth_response}" | jq -r '.SecretID // empty')

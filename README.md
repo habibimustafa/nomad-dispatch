@@ -7,6 +7,7 @@ Inputs
 - nomad_token: Nomad ACL token (required unless using OIDC authentication).
 - oidc_enable: Enable OIDC authentication to get Nomad token from GitHub. Default: false.
 - oidc_audience: OIDC audience for token request. Default: nomad.example.com.
+- oidc_debug: Enable debug output for OIDC authentication responses. Default: false.
 - job_name: Parameterized Nomad job name to dispatch. Required.
 - payload: Optional raw string payload (will be base64 encoded).
 - meta: Optional metadata as YAML object or JSON string (e.g., key1: val1, key2: val2 or {"key1":"val1"}). Default: {}.
@@ -115,6 +116,10 @@ jobs:
 - The workflow must have `id-token: write` permission
 - Nomad must be configured with OIDC authentication method
 - The `oidc_audience` should match your Nomad OIDC configuration
+
+**Troubleshooting OIDC authentication:**
+- Set `oidc_debug: true` to see the raw Nomad authentication response
+- This helps diagnose jq parsing failures and authentication errors
 
 TLS Options
 - Set `tls_skip_verify: true` to bypass verification (not recommended for production).

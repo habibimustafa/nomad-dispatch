@@ -168,6 +168,27 @@ jobs:
             github_actor: ${{ github.actor }}
           dry_run: true
 
+  dry-run-with-oidc-debug:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dry-run dispatch with OIDC debug enabled
+        uses: ./
+        with:
+          nomad_addr: https://example.invalid:4646
+          oidc_enable: true
+          oidc_audience: nomad.example.com
+          oidc_debug: true
+          job_name: dummy-job
+          payload: "OIDC debug test"
+          meta: |
+            debug_mode: enabled
+            test_type: oidc_debug
+          dry_run: true
+
   dry-run-comprehensive:
     runs-on: ubuntu-latest
     steps:
