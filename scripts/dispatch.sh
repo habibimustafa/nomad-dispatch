@@ -36,6 +36,7 @@ WAIT_TIMEOUT=${WAIT_TIMEOUT:-300}
 PRINT_LOGS=${PRINT_LOGS:-false}
 TASK_NAME=${TASK_NAME:-}
 DRY_RUN=${DRY_RUN:-false}
+COMMAND_DEBUG=${COMMAND_DEBUG:-false}
 
 # Validate required inputs
 require "nomad_addr" "$NOMAD_ADDR"
