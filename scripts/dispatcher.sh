@@ -23,7 +23,7 @@ run_dispatch() {
   fi
 
   if [[ "${DRY_RUN}" == "true" ]]; then
-    note "dry_run=true; would run: nomad job dispatch ${NOMAD_ARGS[*]} ${META_ARGS[*]} ${JOB_NAME} ${PAYLOAD:+-}"
+    note "dry_run=true; would run: nomad job dispatch ${NOMAD_ARGS[*]} ${META_ARGS[*]} -detach ${JOB_NAME} ${PAYLOAD:+-}"
     echo "status=dispatched" >>"${GITHUB_OUTPUT}"
     return 0
   fi
@@ -33,20 +33,20 @@ run_dispatch() {
   # Debug output to show the actual command
   if [[ "${DISPATCH_DEBUG}" == "true" ]]; then
     if [[ -n "${PAYLOAD}" ]]; then
-      note "Command Debug: printf '%s' \"${PAYLOAD}\" | nomad job dispatch ${NOMAD_ARGS[*]} ${META_ARGS[*]} ${JOB_NAME} -"
+      note "Command Debug: printf '%s' \"${PAYLOAD}\" | nomad job dispatch ${NOMAD_ARGS[*]} ${META_ARGS[*]} -detach ${JOB_NAME} -"
     else
-      note "Command Debug: nomad job dispatch ${NOMAD_ARGS[*]} ${META_ARGS[*]} ${JOB_NAME}"
+      note "Command Debug: nomad job dispatch ${NOMAD_ARGS[*]} ${META_ARGS[*]} -detach ${JOB_NAME}"
     fi
   fi
 
   if [[ -n "${PAYLOAD}" ]]; then
     set +e
-    out=$(printf '%s' "${PAYLOAD}" | nomad job dispatch "${NOMAD_ARGS[@]}" "${META_ARGS[@]}" "${JOB_NAME}" - 2>&1)
+    out=$(printf '%s' "${PAYLOAD}" | nomad job dispatch "${NOMAD_ARGS[@]}" "${META_ARGS[@]}" -detach "${JOB_NAME}" - 2>&1)
     rc=$?
     set -e
   else
     set +e
-    out=$(nomad job dispatch "${NOMAD_ARGS[@]}" "${META_ARGS[@]}" "${JOB_NAME}" 2>&1)
+    out=$(nomad job dispatch "${NOMAD_ARGS[@]}" "${META_ARGS[@]}" -detach "${JOB_NAME}" 2>&1)
     rc=$?
     set -e
   fi
@@ -60,8 +60,8 @@ run_dispatch() {
   fi
 
   # Parse output for EvalID and DispatchedJobID
-  EVAL_ID=$(echo "${out}" | sed -n 's/^Evaluation ID: *//p' | head -n1)
-  DISPATCHED_JOB_ID=$(echo "${out}" | sed -n 's/^Dispatched Job ID: *//p' | head -n1)
+  EVAL_ID=$(echo "${out}" | sed -n 's/^Evaluation ID *= //p' | head -n1)
+  DISPATCHED_JOB_ID=$(echo "${out}" | sed -n 's/^Dispatched Job ID *= //p' | head -n1)
   if [[ -z "${EVAL_ID}" ]]; then
     # Try alternative formatting
     EVAL_ID=$(echo "${out}" | grep -Eo '[0-9a-f-]{36}' | head -n1 || true)
