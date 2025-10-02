@@ -213,3 +213,59 @@ jobs:
           nomad_version: latest
           dry_run: true
 
+  dry-run-with-command-debug:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dry-run dispatch with command debug enabled
+        uses: ./
+        with:
+          nomad_addr: https://example.invalid:4646
+          nomad_token: dummy
+          job_name: dummy-job
+          payload: "debug test payload"
+          meta: |
+            debug_enabled: true
+            test_type: command_debug
+          region: us-east-1
+          namespace: debug
+          command_debug: true
+          dry_run: true
+
+  dry-run-with-meta-spaces:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dry-run dispatch with meta values containing spaces
+        uses: ./
+        with:
+          nomad_addr: https://example.invalid:4646
+          nomad_token: dummy
+          job_name: dummy-job
+          payload: "test with spaced meta values"
+          meta: |
+            user_cmd: echo "hello from github"
+            description: test with multiple spaces
+            script_path: /path/to script with spaces.sh
+          command_debug: true
+          dry_run: true
+
+  dry-run-with-meta-quotes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dry-run dispatch with meta values containing quotes
+        uses: ./
+        with:
+          nomad_addr: https://example.invalid:4646
+          nomad_token: dummy
+          job_name: dummy-job
+          payload: "test with quoted meta values"
+          meta: |
+            single_quote_cmd: echo 'hello from github'
+            backtick_cmd: echo `hello from github`
+            mixed_quotes: echo "hello" 'world' `test`
+            complex_script: /path/to/script 'with quotes'.sh
+          command_debug: true
+          dry_run: true
+

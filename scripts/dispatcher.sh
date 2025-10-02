@@ -19,7 +19,19 @@ run_dispatch() {
 
   local META_ARGS=()
   if (( ${#META_KV[@]} > 0 )); then
-    for kv in "${META_KV[@]}"; do META_ARGS+=("-meta" "$kv"); done
+    for kv in "${META_KV[@]}"; do
+      # Quote the entire key=value pair if the value contains spaces or special characters
+      if [[ "$kv" =~ .*[[:space:]].* ]] || [[ "$kv" =~ .*[\'\`\$\\\"].* ]] || [[ "$kv" =~ .*[\(\)\[\]\{\}\|\&\;\<\>].* ]]; then
+        # Use double quotes and escape internal double quotes, backslashes, backticks, and dollar signs
+        local escaped_kv="${kv//\\/\\\\}"  # Escape backslashes first
+        escaped_kv="${escaped_kv//\"/\\\"}"  # Escape double quotes
+        escaped_kv="${escaped_kv//\`/\\\`}"  # Escape backticks
+        escaped_kv="${escaped_kv//\$/\\\$}"  # Escape dollar signs
+        META_ARGS+=("-meta" "\"$escaped_kv\"")
+      else
+        META_ARGS+=("-meta" "$kv")
+      fi
+    done
   fi
 
   if [[ "${DRY_RUN}" == "true" ]]; then
