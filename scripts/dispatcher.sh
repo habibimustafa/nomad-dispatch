@@ -71,7 +71,7 @@ run_dispatch() {
     return ${rc}
   fi
 
-  if [[ "${COMMAND_DEBUG}" == "true" ]]; then
+  if [[ "${DISPATCH_DEBUG}" == "true" ]]; then
     echo "${out}"
   fi
 
